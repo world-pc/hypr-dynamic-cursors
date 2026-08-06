@@ -12,6 +12,7 @@
 #include "mode/ModeTilt.hpp"
 #include "mode/ModeStretch.hpp"
 #include "other/Shake.hpp"
+#include "other/Trail.hpp"
 #include "highres.hpp"
 
 class CDynamicCursors {
@@ -62,6 +63,8 @@ class CDynamicCursors {
     // whether we have already locked software for cursor zoom
     bool zoomSoftware = false;
 
+    bool trailSoftware = false;
+
     // modes
     CModeRotate  rotate;
     CModeTilt    tilt;
@@ -73,6 +76,9 @@ class CDynamicCursors {
 
     // shake
     CShake shake;
+
+    // trail
+    CTrail trail;
 
     /* is set true if a genuine move is being performed, and will be reset to false after onCursorMoved */
     bool isMove = false;

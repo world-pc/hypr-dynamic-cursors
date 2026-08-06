@@ -144,6 +144,21 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
 
     g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
 
+    //nu trail stuff
+    if (CONFIG(trailEnabled)) {
+        for (const auto& point : trail.get()) {
+            CCursorPassElement::SRenderData trailData = data;
+
+            Vector2D local = 
+                (point - pMonitor->m_position) * pMonitor->m_scale - data.hotspot;
+
+            trailData.box.x = std::round(local.x);
+            trailData.box.y = std::round(local.y);
+
+            g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
+        }
+    }
+
     if (pointers->m_currentCursorImage.surface)
         pointers->m_currentCursorImage.surface->resource()->frame(now);
 }
@@ -366,6 +381,10 @@ void CDynamicCursors::onCursorMoved(Pointer::CPointerManager* pointers) {
 
         if (CONFIG(shakeEnabled))
             shake.warp(lastPos, pointers->m_pointerPos);
+
+        if (CONFIG(trailEnabled)) {
+            trail.warp();
+        }
     }
 
     calculate(MOVE);
@@ -429,6 +448,22 @@ void CDynamicCursors::calculate(EModeUpdate type) {
             resultMode = SModeResult();
     } else
         resultShake = 1;
+
+    if (CONFIG(trailEnabled))
+        if (type == TICK)
+            trail.push(Pointer::mgr()->m_pointerPos);
+
+    if (CONFIG(trailEnabled))
+        if(!trailSoftware) {
+            Pointer::mgr()->lockSoftwareAll();
+            trailSoftware=true;
+        }
+   else
+       if(trailSoftware) {
+           Pointer::mgr()->damageIfSoftware();
+           Pointer::mgr()->unlockSoftwareAll();
+           trailSoftware = false;
+       }
 
     auto result = resultMode;
     result.scale *= resultShake;
