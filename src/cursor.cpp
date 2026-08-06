@@ -157,6 +157,15 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
 
             g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
         }
+
+        //damage whole trail to prevent artifacts.
+        for(const auto& point : trail.get()) {
+            CBox box = {
+                point.x, point.y,
+                1000, 1000
+            };
+            pMonitor->addDamage(box);
+        }
     }
 
     if (pointers->m_currentCursorImage.surface)
