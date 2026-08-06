@@ -40,6 +40,8 @@ class CConfigHandler {
     SP<CFloatValue> c_shakeLimit;
     SP<CIntValue>   c_shakeTimeout;
 
+    SP<CBoolValue> c_trailEnabled;
+
     SP<CBoolValue>   c_highresEnabled;
     SP<CIntValue>    c_highresNearest;
     SP<CStringValue> c_highresFallback;
