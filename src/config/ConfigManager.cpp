@@ -43,6 +43,7 @@ CConfigHandler::CConfigHandler() {
     c_shakeTimeout    = conf(NS("shake:timeout"),          2000,                   "time in milliseconds the cursor will stay magnified after a shake has ended");
 
     c_trailEnabled    = conf(NS("trail:enabled"),          false,                  "enables cursor trail");
+    c_trailLength     = conf(NS("trail:length"),           15,                     "cursor trail length, in cursors.");
 
     c_highresEnabled  = conf(NS("hyprcursor:enabled"),     true,                   "enable dedicated hyprcursor support");
     c_highresNearest  = conf(NS("hyprcursor:nearest"),     1,                      "use nearest-neighbour scaling when magnifying beyond texture size");

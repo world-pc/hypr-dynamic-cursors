@@ -13,7 +13,13 @@
 #include <hyprland/src/event/EventBus.hpp>
 
 void CTrail::push(Vector2D pos) {
+    max = CONFIG(trailLength);
     samples.resize(max);
+
+    if(index >= max) {
+        index = 0;
+    }
+
     samples[index] = pos;
     index = (index + 1) % max;
 }

@@ -41,6 +41,7 @@ class CConfigHandler {
     SP<CIntValue>   c_shakeTimeout;
 
     SP<CBoolValue> c_trailEnabled;
+    SP<CIntValue> c_trailLength;
 
     SP<CBoolValue>   c_highresEnabled;
     SP<CIntValue>    c_highresNearest;
