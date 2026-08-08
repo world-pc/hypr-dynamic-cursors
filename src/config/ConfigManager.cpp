@@ -44,6 +44,7 @@ CConfigHandler::CConfigHandler() {
 
     c_trailEnabled    = conf(NS("trail:enabled"),          false,                  "enables cursor trail");
     c_trailLength     = conf(NS("trail:length"),           15,                     "cursor trail length, in cursors.");
+    c_trailRate       = conf(NS("trail:rate"),             5,                      "spawn a cursor every x frames.");
 
     c_highresEnabled  = conf(NS("hyprcursor:enabled"),     true,                   "enable dedicated hyprcursor support");
     c_highresNearest  = conf(NS("hyprcursor:nearest"),     1,                      "use nearest-neighbour scaling when magnifying beyond texture size");

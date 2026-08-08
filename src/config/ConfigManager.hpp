@@ -42,6 +42,7 @@ class CConfigHandler {
 
     SP<CBoolValue> c_trailEnabled;
     SP<CIntValue> c_trailLength;
+    SP<CIntValue> c_trailRate;
 
     SP<CBoolValue>   c_highresEnabled;
     SP<CIntValue>    c_highresNearest;
