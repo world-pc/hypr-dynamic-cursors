@@ -13,18 +13,22 @@
 #include <hyprland/src/event/EventBus.hpp>
 
 void CTrail::push(Vector2D pos) {
-    //determine if it's the rigth time to spawn a new cursor (according to rate)
-    req_counter += 1;
-    if(req_counter >= CONFIG(trailRate)) {
-        req_counter = 0;
+    tick_counter += 1;
 
+    //determine if it's the right time to spawn a new cursor (according to rate)
+    if(tick_counter >= CONFIG(trailRate)) {
+        tick_counter = 0; //reset tick counter
+
+        //make sure we have the latest user-defined trail length
         max = CONFIG(trailLength);
         samples.resize(max);
 
+        //just in case we size down the trail length
         if(index >= max) {
             index = 0;
         }
 
+        //add position to trail ring buffer
         samples[index] = pos;
         index = (index + 1) % max;
     }
@@ -33,4 +37,5 @@ void CTrail::push(Vector2D pos) {
 void CTrail::warp(void) {
     samples.clear();
     index = 0;
+    tick_counter = 0;
 }

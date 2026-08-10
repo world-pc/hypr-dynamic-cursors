@@ -14,7 +14,7 @@ class CTrail {
   private:
         int index = 0;
         int max = 15;
-        int req_counter = 0;
+        int tick_counter = 0;
 
     /* ringbuffer for last samples */
     std::vector<Vector2D> samples;
