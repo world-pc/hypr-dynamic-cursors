@@ -3,10 +3,6 @@
 #include <hyprutils/math/Vector2D.hpp>
 #include <vector>
 
-using namespace Hyprutils::Math;
-using namespace Hyprutils::Animation;
-using namespace std::chrono;
-
 class CTrail {
   public:       
     void push(Vector2D pos);
