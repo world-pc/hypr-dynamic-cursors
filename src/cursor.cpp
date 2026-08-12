@@ -147,9 +147,6 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
     //nu trail stuff
     if (CONFIG(trailEnabled)) {
 
-        //update trail opacities
-        trail.updateAlpha();
-
         for (const auto& point : trail.get()) {
             CCursorPassElement::SRenderData trailData = data;
 
@@ -159,7 +156,8 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
             trailData.box.x = std::round(local.x);
             trailData.box.y = std::round(local.y);
             
-            trailData.alpha = point.alpha;
+            trailData.alpha = 
+               250.0 / std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - point.timestamp).count();
 
             g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
         }

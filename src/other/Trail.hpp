@@ -2,16 +2,17 @@
 #include <hyprutils/animation/AnimatedVariable.hpp>
 #include <hyprutils/math/Vector2D.hpp>
 #include <vector>
+#include <chrono>
+
+using namespace std::chrono;
 
 class CTrail {
   public:
 
     struct TrailPoint {
         Vector2D pos;
-        double alpha;
+        high_resolution_clock::time_point timestamp;
     };
-
-    void updateAlpha(void);
 
     void push(Vector2D pos);
     const std::vector<TrailPoint>& get() const {return samples;}
