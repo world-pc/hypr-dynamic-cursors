@@ -146,14 +146,20 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
 
     //nu trail stuff
     if (CONFIG(trailEnabled)) {
+
+        //update trail opacities
+        trail.updateAlpha();
+
         for (const auto& point : trail.get()) {
             CCursorPassElement::SRenderData trailData = data;
 
             Vector2D local = 
-                (point - pMonitor->m_position) * pMonitor->m_scale - data.hotspot;
+                (point.pos - pMonitor->m_position) * pMonitor->m_scale - data.hotspot;
 
             trailData.box.x = std::round(local.x);
             trailData.box.y = std::round(local.y);
+            
+            trailData.alpha = point.alpha;
 
             g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
         }
@@ -161,7 +167,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
         //damage whole trail to prevent artifacts.
         for(const auto& point : trail.get()) {
             CBox box = {
-                point.x, point.y,
+                point.pos.x, point.pos.y,
                 1000, 1000
             };
             pMonitor->addDamage(box);
@@ -296,7 +302,7 @@ SP<Aquamarine::IBuffer> CDynamicCursors::renderHardware(Pointer::CPointerManager
     Mat3x3 transform = toTransform(xbox, resultShown.rotation, Pointer::mgr()->m_currentCursorImage.hotspot * state->monitor->m_scale * zoom, resultShown.stretch.angle,
                                    resultShown.stretch.magnitude);
 
-    drawCursor(transform, texture, xbox, damageRegion, zoom > 1 && CONFIG(highresNearest));
+    drawCursor(transform, texture, xbox, damageRegion, zoom > 1 && CONFIG(highresNearest), 1.0);
 
     g_pHyprRenderer->endRender();
     g_pHyprRenderer->m_renderData.pMonitor.reset();

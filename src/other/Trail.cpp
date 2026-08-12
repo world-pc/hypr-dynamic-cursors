@@ -12,6 +12,12 @@
 #include <hyprland/src/render/Renderer.hpp>
 #include <hyprland/src/event/EventBus.hpp>
 
+void CTrail::updateAlpha(void) {
+    for(int i = 0; i < samples.size(); i += 1) {
+        samples.at(i).alpha -= 0.025;
+    }
+}
+
 void CTrail::push(Vector2D pos) {
     tick_counter += 1;
 
@@ -29,7 +35,9 @@ void CTrail::push(Vector2D pos) {
         }
 
         //add position to trail ring buffer
-        samples[index] = pos;
+        samples[index].pos = pos;
+        samples[index].alpha = 1.0f;
+
         index = (index + 1) % max;
     }
 }

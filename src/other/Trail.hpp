@@ -11,8 +11,10 @@ class CTrail {
         double alpha;
     };
 
+    void updateAlpha(void);
+
     void push(Vector2D pos);
-    const std::vector<Vector2D>& get() const {return samples;}
+    const std::vector<TrailPoint>& get() const {return samples;}
 
     /* called when a cursor warp has happened (to avoid magnifying on warps) */
     void   warp(void);
@@ -23,5 +25,5 @@ class CTrail {
         int tick_counter = 0;
 
     /* ringbuffer for last samples */
-    std::vector<Vector2D> samples;
+    std::vector<TrailPoint> samples;
 };
