@@ -4,7 +4,13 @@
 #include <vector>
 
 class CTrail {
-  public:       
+  public:
+
+    struct TrailPoint {
+        Vector2D pos;
+        double alpha;
+    };
+
     void push(Vector2D pos);
     const std::vector<Vector2D>& get() const {return samples;}
 
