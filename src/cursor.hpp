@@ -79,6 +79,7 @@ class CDynamicCursors {
 
     // trail
     CTrail trail;
+    CBox lastTrailBounds = {0, 0, 0, 0};
 
     /* is set true if a genuine move is being performed, and will be reset to false after onCursorMoved */
     bool isMove = false;

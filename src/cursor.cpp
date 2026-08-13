@@ -1,6 +1,8 @@
 #include <any>    // IWYU pragma: keep
 #include <chrono> // IWYU pragma: keep
 #include <ranges> // IWYU pragma: keep
+#include <algorithm>
+
 #define private public
 #include <hyprland/src/pointer/cursor/CursorManager.hpp>
 #include <hyprland/src/pointer/PointerManager.hpp>
@@ -147,6 +149,11 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
     //nu trail stuff
     if (CONFIG(trailEnabled)) {
 
+        //tracking this for damage box.
+        double min_x = 0, max_x = 0,
+               min_y = 0, max_y = 0;
+        bool first_point = true;
+
         for (const auto& point : trail.get()) {
             CCursorPassElement::SRenderData trailData = data;
 
@@ -156,20 +163,37 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
             trailData.box.x = std::round(local.x);
             trailData.box.y = std::round(local.y);
             
+            //update damage bounds
+            if(first_point) {
+                min_x = trailData.box.x;
+                max_x = trailData.box.x + trailData.box.w;
+                min_y = trailData.box.y;
+                max_y = trailData.box.y + trailData.box.h;
+                first_point = false;
+            }
+            else {
+                min_x = std::min(trailData.box.x, min_x);
+                max_x = std::max(trailData.box.x + trailData.box.w, max_x);
+                min_y = std::min(trailData.box.y, min_y);
+                max_y = std::max(trailData.box.y + trailData.box.h, max_y);
+            }
+
             trailData.alpha = 
                CONFIG(trailFadeTime)/ std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - point.timestamp).count();
 
             g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
-        }
-
-        //damage whole trail to prevent artifacts.
-        for(const auto& point : trail.get()) {
-            CBox box = {
-                point.pos.x, point.pos.y,
-                1000, 1000
-            };
             pMonitor->addDamage(box);
         }
+
+        //apply damage
+        CBox box = {
+            min_x, min_y, max_x-min_x, max_y-min_y
+        };
+
+        pMonitor->addDamage(box);
+        pMonitor->addDamage(lastTrailBounds);
+
+        lastTrailBounds = box;
     }
 
     if (pointers->m_currentCursorImage.surface)
@@ -471,6 +495,7 @@ void CDynamicCursors::calculate(EModeUpdate type) {
             Pointer::mgr()->lockSoftwareAll();
             trailSoftware=true;
         }
+        Pointer::mgr()->damageIfSoftware();
     }
     else {
        if (trailSoftware) {
