@@ -12,6 +12,12 @@ class CTrail {
     struct TrailPoint {
         Vector2D pos;
         high_resolution_clock::time_point timestamp;
+
+        float age(void) {
+            return std::chrono::duration_cast<std::chrono::milliseconds>
+                   (std::chrono::high_resolution_clock::now() - timestamp)
+                   .count();
+        }
     };
 
     void push(Vector2D pos);
