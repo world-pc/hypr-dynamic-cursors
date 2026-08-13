@@ -157,7 +157,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
             trailData.box.y = std::round(local.y);
             
             trailData.alpha = 
-               250.0 / std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - point.timestamp).count();
+               CONFIG(trailFadeTime)/ std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - point.timestamp).count();
 
             g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
         }
