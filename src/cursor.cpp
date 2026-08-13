@@ -149,7 +149,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
     //nu trail stuff
     if (CONFIG(trailEnabled)) {
 
-        //tracking this for damage box.
+        //tracking this for current damage box (currentTrailBounds)
         double min_x = 0, max_x = 0,
                min_y = 0, max_y = 0;
         bool first_point = true;
@@ -178,6 +178,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 max_y = std::max(trailData.box.y + trailData.box.h, max_y);
             }
 
+            //compute point's alpha value
             trailData.alpha = 
                CONFIG(trailFadeTime)/ std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - point.timestamp).count();
 
@@ -186,14 +187,14 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
         }
 
         //apply damage
-        CBox box = {
+        CBox currentTrailBounds = {
             min_x, min_y, max_x-min_x, max_y-min_y
         };
 
-        pMonitor->addDamage(box);
+        pMonitor->addDamage(currentTrailBounds);
         pMonitor->addDamage(lastTrailBounds);
 
-        lastTrailBounds = box;
+        lastTrailBounds = currentTrailBounds;
     }
 
     if (pointers->m_currentCursorImage.surface)
