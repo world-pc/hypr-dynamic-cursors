@@ -261,6 +261,28 @@ plugin:dynamic-cursors {
         ipc = false
     }
 
+    # cursor trail effect
+    trail {
+
+        #enables cursor trail
+        enabled = false
+
+        #enable the trail when cursor's magnified
+        zoom_enabled = true
+
+        #enable trail cursors fading out vs. just disappearing
+        fade_enabled = true
+
+        #maximum quantity of cursors in the trail
+        length = 1000
+
+        #spawn a trail cursor every x ticks
+        rate = 5
+
+        #trail cursors removed afte x ms 
+        lifetime = 700
+    }
+
     # use hyprcursor to get a higher resolution texture when the cursor is magnified
     # see the `hyprcursor` section below
     hyprcursor {
