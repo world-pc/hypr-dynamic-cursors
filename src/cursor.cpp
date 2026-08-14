@@ -151,62 +151,67 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
 
     //nu trail stuff
     if (CONFIG(trailEnabled)) {
+        //check if we're enabling cursor trail during zoom.
+        if((zoom > 1 && CONFIG(trailZoomEnabled)) || (zoom <= 1)) {
+            //tracking this for current damage box (currentTrailBounds)
+            double min_x = 0, max_x = 0,
+                   min_y = 0, max_y = 0;
+            bool first_point = true;
 
-        //tracking this for current damage box (currentTrailBounds)
-        double min_x = 0, max_x = 0,
-               min_y = 0, max_y = 0;
-        bool first_point = true;
+            for (const auto& point : trail.get()) {
+                CCursorPassElement::SRenderData trailData = data;
 
-        for (const auto& point : trail.get()) {
-            CCursorPassElement::SRenderData trailData = data;
+                Vector2D local = 
+                    (point.pos - pMonitor->m_position) * pMonitor->m_scale - data.hotspot;
 
-            Vector2D local = 
-                (point.pos - pMonitor->m_position) * pMonitor->m_scale - data.hotspot;
-
-            trailData.box.x = std::round(local.x);
-            trailData.box.y = std::round(local.y);
-            
-            //update damage bounds
-            if(first_point) {
-                min_x = trailData.box.x;
-                max_x = trailData.box.x + trailData.box.w;
-                min_y = trailData.box.y;
-                max_y = trailData.box.y + trailData.box.h;
-                first_point = false;
-            }
-            else {
-                min_x = std::min(trailData.box.x, min_x);
-                max_x = std::max(trailData.box.x + trailData.box.w, max_x);
-                min_y = std::min(trailData.box.y, min_y);
-                max_y = std::max(trailData.box.y + trailData.box.h, max_y);
-            }
-
-            //compute point's alpha value, if trail fading is enabled.
-            if(CONFIG(trailFadeEnabled)) {
-                if(point.age() > CONFIG(trailLifetime)) {
-                    trailData.alpha = 0;
+                trailData.box.x = std::round(local.x);
+                trailData.box.y = std::round(local.y);
+                
+                //update damage bounds
+                if(first_point) {
+                    min_x = trailData.box.x;
+                    max_x = trailData.box.x + trailData.box.w;
+                    min_y = trailData.box.y;
+                    max_y = trailData.box.y + trailData.box.h;
+                    first_point = false;
                 }
                 else {
-                    trailData.alpha = 1.0f - point.age() / CONFIG(trailLifetime);
+                    min_x = std::min(trailData.box.x, min_x);
+                    max_x = std::max(trailData.box.x + trailData.box.w, max_x);
+                    min_y = std::min(trailData.box.y, min_y);
+                    max_y = std::max(trailData.box.y + trailData.box.h, max_y);
                 }
-            }
-            else {
-                trailData.alpha = 1.0f;
-            }
 
-            g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
-            pMonitor->addDamage(box);
+                //compute point's alpha value, if trail fading is enabled.
+                if(CONFIG(trailFadeEnabled)) {
+                    if(point.age() > CONFIG(trailLifetime)) {
+                        trailData.alpha = 0;
+                    }
+                    else {
+                        trailData.alpha = 1.0f - point.age() / CONFIG(trailLifetime);
+                    }
+                }
+                else {
+                    trailData.alpha = 1.0f;
+                }
+
+                g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
+                pMonitor->addDamage(box);
+
+                //apply damage
+                CBox currentTrailBounds = {
+                    min_x-50, min_y-50, max_x-min_x+100, max_y-min_y+100
+                };
+
+                pMonitor->addDamage(currentTrailBounds);
+                pMonitor->addDamage(lastTrailBounds);
+
+                lastTrailBounds = currentTrailBounds;
+            }
         }
-
-        //apply damage
-        CBox currentTrailBounds = {
-            min_x-50, min_y-50, max_x-min_x+100, max_y-min_y+100
-        };
-
-        pMonitor->addDamage(currentTrailBounds);
-        pMonitor->addDamage(lastTrailBounds);
-
-        lastTrailBounds = currentTrailBounds;
+        else {
+            g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
+        }
     }
 
     if(pointers->m_currentCursorImage.surface) {
