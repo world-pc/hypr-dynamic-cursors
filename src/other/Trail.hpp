@@ -1,7 +1,7 @@
 #include <hyprland/src/helpers/AnimatedVariable.hpp>
 #include <hyprutils/animation/AnimatedVariable.hpp>
 #include <hyprutils/math/Vector2D.hpp>
-#include <vector>
+#include <deque>
 #include <chrono>
 
 using namespace std::chrono;
@@ -21,7 +21,7 @@ class CTrail {
     };
 
     void push(Vector2D pos);
-    const std::vector<TrailPoint>& get() const {return samples;}
+    const std::deque<TrailPoint>& get() const {return samples;}
 
     /* called when a cursor warp has happened (to avoid magnifying on warps) */
     void   warp(void);
@@ -32,5 +32,5 @@ class CTrail {
         int tick_counter = 0;
 
     /* ringbuffer for last samples */
-    std::vector<TrailPoint> samples;
+    std::deque<TrailPoint> samples;
 };

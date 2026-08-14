@@ -178,12 +178,17 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 max_y = std::max(trailData.box.y + trailData.box.h, max_y);
             }
 
-            //compute point's alpha value
-            if(point.age() > CONFIG(trailFadeTime)) {
-                trailData.alpha = 0;
+            //compute point's alpha value, if trail fading is enabled.
+            if(CONFIG(trailFadeEnabled)) {
+                if(point.age() > CONFIG(trailLifetime)) {
+                    trailData.alpha = 0;
+                }
+                else {
+                    trailData.alpha = 1.0f - point.age() / CONFIG(trailLifetime);
+                }
             }
             else {
-                trailData.alpha = 1.0f - point.age() / CONFIG(trailFadeTime);
+                trailData.alpha = 1.0f;
             }
 
             g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
@@ -492,8 +497,9 @@ void CDynamicCursors::calculate(EModeUpdate type) {
         resultShake = 1;
 
     if (CONFIG(trailEnabled))
-        if (type == TICK)
+        if (type == TICK) {
             trail.push(Pointer::mgr()->m_pointerPos);
+        }
 
     if (CONFIG(trailEnabled)) {
         if(!trailSoftware) {
