@@ -179,7 +179,12 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
             }
 
             //compute point's alpha value
-            trailData.alpha = CONFIG(trailFadeTime) / point.age();
+            if(point.age() > CONFIG(trailFadeTime)) {
+                trailData.alpha = 0;
+            }
+            else {
+                trailData.alpha = 1.0f - point.age() / CONFIG(trailFadeTime);
+            }
 
             g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
             pMonitor->addDamage(box);
