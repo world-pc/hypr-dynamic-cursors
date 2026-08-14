@@ -29,10 +29,7 @@ class CTrail {
     void   warp(void);
 
   private:
-        int index = 0;
-        int max = 15;
         int tick_counter = 0;
 
-    /* ringbuffer for last samples */
     std::deque<TrailPoint> samples;
 };
