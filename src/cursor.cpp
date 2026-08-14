@@ -143,8 +143,11 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
     data.nearest          = nearest;
     data.stretchAngle     = resultShown.stretch.angle;
     data.stretchMagnitude = resultShown.stretch.magnitude;
+    data.alpha = 1.0f;
 
-    g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
+    if(!CONFIG(trailEnabled)) {
+        g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
+    }
 
     //nu trail stuff
     if (CONFIG(trailEnabled)) {

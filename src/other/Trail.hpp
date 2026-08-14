@@ -21,7 +21,9 @@ class CTrail {
     };
 
     void push(Vector2D pos);
-    const std::deque<TrailPoint>& get() const {return samples;}
+    const std::deque<TrailPoint>& get() const {
+        return samples;
+    }
 
     /* called when a cursor warp has happened (to avoid magnifying on warps) */
     void   warp(void);
