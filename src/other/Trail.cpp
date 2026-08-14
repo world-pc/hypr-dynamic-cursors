@@ -23,7 +23,7 @@ void CTrail::push(Vector2D pos) {
     if(samples.size() > 0) {
         if(samples.back().pos == pos) {
             samples.back().timestamp = high_resolution_clock::now();
-             return;
+            return;
         }
     }
 

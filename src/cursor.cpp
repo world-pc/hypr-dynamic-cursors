@@ -197,7 +197,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
 
         //apply damage
         CBox currentTrailBounds = {
-            min_x, min_y, max_x-min_x, max_y-min_y
+            min_x-50, min_y-50, max_x-min_x+100, max_y-min_y+100
         };
 
         pMonitor->addDamage(currentTrailBounds);
@@ -206,8 +206,9 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
         lastTrailBounds = currentTrailBounds;
     }
 
-    if (pointers->m_currentCursorImage.surface)
+    if(pointers->m_currentCursorImage.surface) {
         pointers->m_currentCursorImage.surface->resource()->frame(now);
+    }
 }
 
 /*
