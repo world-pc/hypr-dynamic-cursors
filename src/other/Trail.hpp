@@ -13,7 +13,7 @@ class CTrail {
         Vector2D pos;
         high_resolution_clock::time_point timestamp;
 
-        float age(void) {
+        float age(void) const {
             return std::chrono::duration_cast<std::chrono::milliseconds>
                    (std::chrono::high_resolution_clock::now() - timestamp)
                    .count();
