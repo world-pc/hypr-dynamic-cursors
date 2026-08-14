@@ -12,42 +12,37 @@
 #include <hyprland/src/render/Renderer.hpp>
 #include <hyprland/src/event/EventBus.hpp>
 
+using namespace std::chrono;
+
 void CTrail::push(Vector2D pos) {
 
-    //make sure we have the latest user-defined trail length
-    max = CONFIG(trailLength);
-    samples.resize(max);
-
-    //just in case we size down the trail length
-    if(index >= max) {
-        index = 0;
-    }
-
-    tick_counter += 1;
+    //remove oldest cursor first if its lifetime is exceeded.
+    std::erase_if(samples, [](CTrail::TrailPoint& x) {return x.age() >= CONFIG(trailLifetime); });
 
     //don't stack cursors, but keep an idle cursor young (for alpha calcs)
-    int last_pushed_index = (index > 0) ? (index - 1) : (samples.size()-1);
-
-    if(pos == samples[last_pushed_index].pos) {
-        samples[last_pushed_index].timestamp =
-            std::chrono::high_resolution_clock::now();
-        return;
+    if(samples.size() > 0) {
+        if(samples.back().pos == pos) {
+            samples.back().timestamp = high_resolution_clock::now();
+             return;
+        }
     }
 
     //determine if it's the right time to spawn a new cursor (according to rate)
+    tick_counter += 1;
     if(tick_counter >= CONFIG(trailRate)) {
+        //if we've exceeded the max trail length, remove earliest trail point
+        if(samples.size() >= CONFIG(trailLifetime)) {
+            samples.pop_front();
+        }
+
         tick_counter = 0; //reset tick counter
 
         //add position to trail ring buffer
-        samples[index].pos = pos;
-        samples[index].timestamp = std::chrono::high_resolution_clock::now();
-
-        index = (index + 1) % max;
+        samples.push_back({pos, high_resolution_clock::now()});
     }
 }
 
 void CTrail::warp(void) {
     samples.clear();
-    index = 0;
     tick_counter = 0;
 }
