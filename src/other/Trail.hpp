@@ -14,8 +14,8 @@ class CTrail {
         high_resolution_clock::time_point timestamp;
 
         float age(void) const {
-            return std::chrono::duration_cast<std::chrono::milliseconds>
-                   (std::chrono::high_resolution_clock::now() - timestamp)
+            return duration_cast<std::chrono::milliseconds>
+                   (high_resolution_clock::now() - timestamp)
                    .count();
         }
     };
