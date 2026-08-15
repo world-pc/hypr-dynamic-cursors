@@ -37,6 +37,13 @@ class CConfigHandler {
     SP<CFloatValue> c_shakeLimit;
     SP<CIntValue>   c_shakeTimeout;
 
+    SP<CBoolValue> c_trailEnabled;
+    SP<CBoolValue> c_trailZoomEnabled;
+    SP<CBoolValue> c_trailFadeEnabled;
+    SP<CIntValue> c_trailLength;
+    SP<CIntValue> c_trailRate;
+    SP<CFloatValue> c_trailLifetime;
+
     SP<CBoolValue>   c_highresEnabled;
     SP<CIntValue>    c_highresNearest;
     SP<CStringValue> c_highresFallback;
