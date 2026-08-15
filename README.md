@@ -250,26 +250,26 @@ hl.config { plugin = { dynamic_cursors = {
     },
 
     -- cursor trail effect
-        trail {
+    trail {
 
-            -- enables cursor trail
-            enabled = false
+        -- enables cursor trail
+        enabled = false
 
-            -- enable the trail when cursor's magnified
-            zoom_enabled = true
+        -- enable the trail when cursor's magnified
+        zoom_enabled = true
 
-            -- enable trail cursors fading out vs. just disappearing
-            fade_enabled = true
+        -- enable trail cursors fading out vs. just disappearing
+        fade_enabled = true
 
-            -- maximum quantity of cursors in the trail
-            length = 1000
+        -- maximum quantity of cursors in the trail
+        length = 1000
 
-            -- spawn a trail cursor every x ticks
-            rate = 5
+        -- spawn a trail cursor every x ticks
+        rate = 5
 
-            -- trail cursors removed after x ms 
-            lifetime = 700
-        }
+        -- trail cursors removed after x ms 
+        lifetime = 700
+    }
 
     -- use hyprcursor to get a higher resolution texture when the cursor is magnified
     -- see the `hyprcursor` section below
