@@ -26,8 +26,8 @@ class CDynamicCursors {
     void onTick(Pointer::CPointerManager* pointers);
 
     /* hook on renderSoftwareCursorsFor */
-    void renderSoftware(Pointer::CPointerManager* pointers, PHLMONITOR pMonitor, const Time::steady_tp& now, CRegion& damage, std::optional<Vector2D> overridePos,
-                        bool screencopy, bool forceRender);
+    void renderSoftware(Pointer::CPointerManager* pointers, PHLMONITOR pMonitor, const Time::steady_tp& now, CRegion& damage, std::optional<Vector2D> overridePos, bool screencopy,
+                        bool forceRender);
     /* hook on damageIfSoftware*/
     void damageSoftware(Pointer::CPointerManager* pointers);
     /* hook on renderHWCursorBuffer */
@@ -79,7 +79,7 @@ class CDynamicCursors {
 
     // trail
     CTrail trail;
-    CBox lastTrailBounds = {0, 0, 0, 0};
+    CBox   lastTrailBounds = {0, 0, 0, 0};
 
     /* is set true if a genuine move is being performed, and will be reset to false after onCursorMoved */
     bool isMove = false;
