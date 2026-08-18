@@ -148,9 +148,9 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
     if (!CONFIG(trailEnabled)) {
         g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
     }
+    else { 
+        //nu trail stuff
 
-    //nu trail stuff
-    if (CONFIG(trailEnabled)) {
         //check if we're enabling cursor trail during zoom.
         if ((zoom > 1 && CONFIG(trailZoomEnabled)) || (zoom <= 1)) {
             //tracking this for current damage box (currentTrailBounds)
