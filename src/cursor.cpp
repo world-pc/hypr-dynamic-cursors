@@ -151,7 +151,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
         //nu trail stuff
 
         //check if we're enabling cursor trail during zoom.
-        if ((zoom > 1 && CONFIG(trailZoomEnabled)) || (zoom <= 1)) {
+        if ((zoom > 1 && CONFIG(trailShake)) || (zoom <= 1)) {
             //tracking this for current damage box (currentTrailBounds)
             double min_x = 0, max_x = 0, min_y = 0, max_y = 0;
             bool   first_point = true;
@@ -179,7 +179,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 }
 
                 //compute point's alpha value, if trail fading is enabled.
-                if (CONFIG(trailFadeEnabled)) {
+                if (CONFIG(trailFade)) {
                     if (point.age() > CONFIG(trailLifetime)) {
                         trailData.alpha = 0;
                     } else {
