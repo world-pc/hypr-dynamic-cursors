@@ -22,7 +22,7 @@ class CTrail {
         return samples;
     }
 
-    /* called when a cursor warp has happened (to avoid magnifying on warps) */
+    /* called when a cursor warp has happened (avoids inaccurate damage bounds / trails) */
     void warp(void);
 
   private:
