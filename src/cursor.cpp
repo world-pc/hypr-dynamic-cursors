@@ -507,7 +507,7 @@ void CDynamicCursors::calculate(EModeUpdate type) {
             Pointer::mgr()->lockSoftwareAll();
             trailSoftware = true;
         }
-        Pointer::mgr()->damageIfSoftware();
+
     } else {
         if (trailSoftware) {
             Pointer::mgr()->damageIfSoftware();
