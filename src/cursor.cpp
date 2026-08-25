@@ -191,7 +191,6 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 }
 
                 g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
-                pMonitor->addDamage(box);
 
                 /* compute diagonal of cursor box to damage cursor rotations:w*/
                 int diagonal = sqrt(2*trailData.box.w + 2*trailData.box.h);
