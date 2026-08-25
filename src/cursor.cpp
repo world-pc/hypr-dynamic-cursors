@@ -192,8 +192,12 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
                 pMonitor->addDamage(box);
 
-                //apply damage
-                CBox currentTrailBounds = {min_x - 50, min_y - 50, max_x - min_x + 100, max_y - min_y + 100};
+                /* compute diagonal of cursor box to damage cursor rotations:w*/
+                int diagonal = sqrt(2*trailData.box.w + 2*trailData.box.h);
+
+                CBox currentTrailBounds = 
+                    {min_x - diagonal, min_y - diagonal,
+                     max_x - min_x + 2*diagonal, max_y - min_y + 2*diagonal};
 
                 pMonitor->addDamage(currentTrailBounds);
                 pMonitor->addDamage(lastTrailBounds);
