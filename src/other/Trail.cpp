@@ -17,7 +17,9 @@ using namespace std::chrono;
 void CTrail::push(Vector2D pos) {
 
     //remove oldest cursor first if its lifetime is exceeded.
-    std::erase_if(samples, [](CTrail::TrailPoint& x) { return x.age() >= CONFIG(trailLifetime); });
+    std::erase_if(samples, [](CTrail::TrailPoint& x) {
+            return x.age() >= CONFIG(trailLifetime); 
+    });
 
     //don't stack cursors, but keep an idle cursor young (for alpha calcs)
     if (samples.size() > 0) {
