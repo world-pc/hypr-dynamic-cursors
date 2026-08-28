@@ -500,16 +500,17 @@ void CDynamicCursors::calculate(EModeUpdate type) {
     } else
         resultShake = 1;
 
-    if (CONFIG(trailEnabled))
+    if (CONFIG(trailEnabled)) {
         if (type == TICK) {
             trail.push(Pointer::mgr()->m_pointerPos);
         }
 
-    if (CONFIG(trailEnabled)) {
         if (!trailSoftware) {
             Pointer::mgr()->lockSoftwareAll();
             trailSoftware = true;
         }
+
+        Pointer::mgr()->damageIfSoftware();
 
     } else {
         if (trailSoftware) {
