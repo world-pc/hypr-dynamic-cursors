@@ -143,7 +143,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
     data.nearest          = nearest;
     data.stretchAngle     = resultShown.stretch.angle;
     data.stretchMagnitude = resultShown.stretch.magnitude;
-    data.alpha            = 1.0f;
+    data.alpha            = 1.0f;  
 
     if (!CONFIG(trailEnabled)) {
         g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
@@ -510,7 +510,9 @@ void CDynamicCursors::calculate(EModeUpdate type) {
             trailSoftware = true;
         }
 
-        Pointer::mgr()->damageIfSoftware();
+        if(trail.get().size() > 1) {
+            Pointer::mgr()->damageIfSoftware();
+        }
 
     } else {
         if (trailSoftware) {
