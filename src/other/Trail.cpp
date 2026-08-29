@@ -39,9 +39,13 @@ void CTrail::push(Vector2D pos) {
 
         tick_counter = 0; //reset tick counter
 
-        //add position to trail ring buffer
-        samples.push_back({pos, high_resolution_clock::now()});
-    }
+        /* only if position is different from last or trail is empty.
+         * push onto trail */
+
+        if( samples.empty() || pos != samples.back().pos ) {
+            samples.push_back({pos, high_resolution_clock::now()});
+        }
+    } 
 }
 
 void CTrail::warp(void) {
