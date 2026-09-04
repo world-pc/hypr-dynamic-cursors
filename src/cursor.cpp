@@ -142,12 +142,11 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
     data.nearest          = nearest;
     data.stretchAngle     = resultShown.stretch.angle;
     data.stretchMagnitude = resultShown.stretch.magnitude;
-    data.alpha            = 1.0f;  
+    data.alpha            = 1.0f;
 
     if (!CONFIG(trailEnabled)) {
         g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
-    }
-    else { 
+    } else {
         //nu trail stuff
 
         //check if we're enabling cursor trail during zoom.
@@ -159,7 +158,18 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
             for (const auto& point : trail.get()) {
                 CCursorPassElement::SRenderData trailData = data;
 
-                Vector2D local = (point.pos - pMonitor->m_position) * pMonitor->m_scale - data.hotspot;
+                //we'll render the point's texture
+                if (point.tex) {
+                    trailData.tex = point.tex;
+                }
+
+                //we'll render the point's rotation
+                trailData.box.rot = point.rotation;
+
+                trailData.box.w = point.size.x * point.scale;
+                trailData.box.h = point.size.y * point.scale;
+
+                Vector2D local = (point.pos - pMonitor->m_position - point.hotspot) * pMonitor->m_scale;
 
                 trailData.box.x = std::round(local.x);
                 trailData.box.y = std::round(local.y);
@@ -192,11 +202,9 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(trailData));
 
                 /* compute diagonal of cursor box to damage cursor rotations:w*/
-                int diagonal = sqrt(2*trailData.box.w + 2*trailData.box.h);
+                int diagonal = sqrt(2 * trailData.box.w + 2 * trailData.box.h);
 
-                CBox currentTrailBounds = 
-                    {min_x - diagonal, min_y - diagonal,
-                     max_x - min_x + 2*diagonal, max_y - min_y + 2*diagonal};
+                CBox currentTrailBounds = {min_x - diagonal, min_y - diagonal, max_x - min_x + 2 * diagonal, max_y - min_y + 2 * diagonal};
 
                 pMonitor->addDamage(currentTrailBounds);
                 pMonitor->addDamage(lastTrailBounds);
@@ -500,8 +508,9 @@ void CDynamicCursors::calculate(EModeUpdate type) {
         resultShake = 1;
 
     if (CONFIG(trailEnabled)) {
+        bool pushed = false;
         if (type == TICK) {
-            trail.push(Pointer::mgr()->m_pointerPos);
+            pushed = trail.push(Pointer::mgr()->m_pointerPos, Pointer::mgr()->m_currentCursorImage, resultShown.rotation, resultShown.scale);
         }
 
         if (!trailSoftware) {
@@ -509,7 +518,7 @@ void CDynamicCursors::calculate(EModeUpdate type) {
             trailSoftware = true;
         }
 
-        if(trail.get().size() > 1) {
+        if (trail.get().size() > 1 || pushed) {
             Pointer::mgr()->damageIfSoftware();
         }
 
