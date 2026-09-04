@@ -14,19 +14,22 @@
 
 using namespace std::chrono;
 
-void CTrail::push(Vector2D pos) {
+bool CTrail::push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& img, double& rotation, double& scale) {
+    /* returns true if an element was actually pushed or updated */
 
     //remove oldest cursor first if its lifetime is exceeded.
-    std::erase_if(samples, [](CTrail::TrailPoint& x) {
-            return x.age() >= CONFIG(trailLifetime); 
-    });
+    std::erase_if(samples, [](CTrail::TrailPoint& x) { return x.age() >= CONFIG(trailLifetime); });
 
     //don't stack cursors, but keep an idle cursor young (for alpha calcs)
-    if (samples.size() > 0) {
+    if (!samples.empty()) {
         if (samples.back().pos == pos) {
             samples.back().timestamp = high_resolution_clock::now();
-            return;
         }
+    }
+
+    //we'll get a stuttering lead cursor if we don't do this outside of the tick_counter conditional below.
+    if (samples.empty()) {
+        samples.push_back({pos, img.bufferTex, rotation, scale, img.size, img.hotspot, high_resolution_clock::now()});
     }
 
     //determine if it's the right time to spawn a new cursor (according to rate)
@@ -39,13 +42,19 @@ void CTrail::push(Vector2D pos) {
 
         tick_counter = 0; //reset tick counter
 
-        /* only if position is different from last or trail is empty.
-         * push onto trail */
-
-        if( samples.empty() || pos != samples.back().pos ) {
-            samples.push_back({pos, high_resolution_clock::now()});
+        /* push onto the trail if it's empty or position/rotation/scale have changed */
+        if (samples.empty() || pos != samples.back().pos) {
+            samples.push_back({pos, img.bufferTex, rotation, scale, img.size, img.hotspot, high_resolution_clock::now()});
+            return true;
+        } else if (!samples.empty() && samples.back().rotation != rotation) {
+            samples.back().rotation = rotation;
+            return true;
+        } else if (!samples.empty() && samples.back().scale) {
+            samples.back().scale = scale;
         }
-    } 
+    }
+
+    return false;
 }
 
 void CTrail::warp(void) {
