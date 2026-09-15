@@ -6,6 +6,8 @@
 #include <deque>
 #include <chrono>
 
+#include "../mode/utils.hpp"
+
 using namespace std::chrono;
 
 class CTrail {
@@ -13,8 +15,7 @@ class CTrail {
     struct TrailPoint {
         Vector2D                          pos;
         SP<Render::ITexture>              tex;
-        double                            rotation;
-        double                            scale;
+        SModeResult result;
         Vector2D                          size;
         Vector2D                          hotspot;
         high_resolution_clock::time_point timestamp;
@@ -24,7 +25,7 @@ class CTrail {
         }
     };
 
-    bool                          push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& img, double& rotation, double& scale);
+    bool                          push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& img, SModeResult& given_result);
     const std::deque<TrailPoint>& get() const {
         return samples;
     }

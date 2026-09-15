@@ -165,10 +165,10 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 }
 
                 //we'll render the point's rotation
-                trailData.box.rot = point.rotation;
+                trailData.box.rot = point.result.rotation;
 
-                trailData.box.w = point.size.x * point.scale;
-                trailData.box.h = point.size.y * point.scale;
+                trailData.box.w = point.size.x * point.result.scale;
+                trailData.box.h = point.size.y * point.result.scale;
 
                 Vector2D local = (point.pos - pMonitor->m_position - point.hotspot) * pMonitor->m_scale;
 
@@ -511,7 +511,7 @@ void CDynamicCursors::calculate(EModeUpdate type) {
     if (CONFIG(trailEnabled)) {
         bool pushed = false;
         if (type == TICK) {
-            pushed = trail.push(Pointer::mgr()->m_pointerPos, Pointer::mgr()->m_currentCursorImage, resultShown.rotation, resultShown.scale);
+            pushed = trail.push(Pointer::mgr()->m_pointerPos, Pointer::mgr()->m_currentCursorImage, resultShown);
         }
 
         if (!trailSoftware) {

@@ -14,7 +14,7 @@
 
 using namespace std::chrono;
 
-bool CTrail::push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& img, double& rotation, double& scale) {
+bool CTrail::push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& img, SModeResult& given_result) {
     /* returns true if an element was actually pushed or updated */
 
     //remove oldest cursor first if its lifetime is exceeded.
@@ -29,7 +29,7 @@ bool CTrail::push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& im
 
     //we'll get a stuttering lead cursor if we don't do this outside of the tick_counter conditional below.
     if (samples.empty()) {
-        samples.push_back({pos, img.bufferTex, rotation, scale, img.size, img.hotspot, high_resolution_clock::now()});
+        samples.push_back({pos, img.bufferTex, given_result, img.size, img.hotspot, high_resolution_clock::now()});
     }
 
     //determine if it's the right time to spawn a new cursor (according to rate)
@@ -44,13 +44,13 @@ bool CTrail::push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& im
 
         /* push onto the trail if it's empty or position/rotation/scale have changed */
         if (samples.empty() || pos != samples.back().pos) {
-            samples.push_back({pos, img.bufferTex, rotation, scale, img.size, img.hotspot, high_resolution_clock::now()});
+            samples.push_back({pos, img.bufferTex, given_result, img.size, img.hotspot, high_resolution_clock::now()});
             return true;
-        } else if (!samples.empty() && samples.back().rotation != rotation) {
-            samples.back().rotation = rotation;
+        } else if (!samples.empty() && samples.back().result.rotation != given_result.rotation) {
+            samples.back().result.rotation = given_result.rotation;
             return true;
-        } else if (!samples.empty() && samples.back().scale) {
-            samples.back().scale = scale;
+        } else if (!samples.empty() && samples.back().result.scale) {
+            samples.back().result.scale = given_result.scale;
         }
     }
 
