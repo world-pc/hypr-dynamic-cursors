@@ -42,15 +42,22 @@ bool CTrail::push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& im
 
         tick_counter = 0; //reset tick counter
 
-        /* push onto the trail if it's empty or position/rotation/scale have changed */
+        /* push onto the trail if it's empty or position/rotation/scale/stretch have changed since last sample*/
+        
         if (samples.empty() || pos != samples.back().pos) {
             samples.push_back({pos, img.bufferTex, rotation, scale, img.size, img.hotspot, high_resolution_clock::now()});
             return true;
-        } else if (!samples.empty() && samples.back().rotation != rotation) {
-            samples.back().rotation = rotation;
-            return true;
-        } else if (!samples.empty() && samples.back().scale) {
-            samples.back().scale = scale;
+        }
+        else {
+            bool rotation_change = samples.back().result.rotation != given_result.rotation,
+                 scale_change    = samples.back().result.scale != given_result.scale,
+                 stretch_change = samples.back().result.stretch.angle != given_result.stretch.angle ||
+                                  samples.back().result.stretch.magnitude != given_result.stretch.magnitude;
+
+            if(rotation_change || scale_change || stretch_change) {
+                samples.push_back({pos, img.bufferTex, given_result, img.size, img.hotspot, high_resolution_clock::now()});
+                return true;
+            }
         }
     }
 

@@ -144,7 +144,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
     data.stretchMagnitude = resultShown.stretch.magnitude;
     data.alpha            = 1.0f;
 
-    if (!CONFIG(trailEnabled)) {
+    if (!CONFIG(trailEnabled) || trail.get().size() <= 1) {
         g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
     } else {
         //nu trail stuff
@@ -166,8 +166,13 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 //we'll render the point's rotation
                 trailData.box.rot = point.rotation;
 
-                trailData.box.w = point.size.x * point.scale;
-                trailData.box.h = point.size.y * point.scale;
+                //render point's scale
+                trailData.box.w = point.size.x * point.result.scale;
+                trailData.box.h = point.size.y * point.result.scale;
+
+                //render point's stretch...
+                trailData.stretchAngle = point.result.stretch.angle;
+                trailData.stretchMagnitude = point.result.stretch.magnitude;
 
                 Vector2D local = (point.pos - pMonitor->m_position - point.hotspot) * pMonitor->m_scale;
 
