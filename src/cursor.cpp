@@ -144,9 +144,7 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
     data.stretchMagnitude = resultShown.stretch.magnitude;
     data.alpha            = 1.0f;
 
-    if (!CONFIG(trailEnabled) || trail.get().size() <= 1) {
-        g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
-    } else {
+    if(CONFIG(trailEnabled)) {
         //nu trail stuff
 
         //check if we're enabling cursor trail during zoom.
@@ -164,11 +162,11 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 }
 
                 //we'll render the point's rotation
-                trailData.box.rot = point.rotation;
+                trailData.box.rot = point.result.rotation;
 
                 //render point's scale
                 trailData.box.w = point.size.x * point.result.scale;
-                trailData.box.h = point.size.y * point.result.scale;
+                trailData.box.h = point.size.y * point.result.scale; 
 
                 //render point's stretch...
                 trailData.stretchAngle = point.result.stretch.angle;
@@ -176,8 +174,8 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
 
                 Vector2D local = (point.pos - pMonitor->m_position - point.hotspot) * pMonitor->m_scale;
 
-                trailData.box.x = std::round(local.x);
-                trailData.box.y = std::round(local.y);
+                trailData.box.x = std::round(local.x) - point.hotspot.x * (zoom-1);
+                trailData.box.y = std::round(local.y) - point.hotspot.y * (zoom-1);
 
                 //update damage bounds
                 if (first_point) {
@@ -216,10 +214,11 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
 
                 lastTrailBounds = currentTrailBounds;
             }
-        } else {
-            g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
         }
     }
+    
+    //always render current cursor
+    g_pHyprRenderer->m_renderPass.add(makeUnique<CCursorPassElement>(data));
 
     if (pointers->m_currentCursorImage.surface) {
         pointers->m_currentCursorImage.surface->resource()->frame(now);
@@ -515,7 +514,7 @@ void CDynamicCursors::calculate(EModeUpdate type) {
     if (CONFIG(trailEnabled)) {
         bool pushed = false;
         if (type == TICK) {
-            pushed = trail.push(Pointer::mgr()->m_pointerPos, Pointer::mgr()->m_currentCursorImage, resultShown.rotation, resultShown.scale);
+            pushed = trail.push(Pointer::mgr()->m_pointerPos, Pointer::mgr()->m_currentCursorImage, resultShown);
         }
 
         if (!trailSoftware) {

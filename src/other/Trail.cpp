@@ -14,50 +14,50 @@
 
 using namespace std::chrono;
 
-bool CTrail::push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& img, double& rotation, double& scale) {
+float CTrail::timeSinceLastPush(void) {
+    return duration_cast<std::chrono::milliseconds>(
+            high_resolution_clock::now() - 
+            last_push_time).count();
+}
+
+bool CTrail::hasChanged(Vector2D pos, SModeResult& given_result) {
+    /* returns true if there's a difference in position, scale, rotation,
+     * stretch from last point in trail.
+     * Or if the trail is empty, so we can calculate differences.*/
+
+    if(samples.empty()) {
+        return true;
+    }
+
+    bool position_change = samples.back().pos != pos,
+         rotation_change = samples.back().result.rotation != given_result.rotation,
+         scale_change    = samples.back().result.scale != given_result.scale,
+         stretch_change = samples.back().result.stretch.angle != given_result.stretch.angle || samples.back().result.stretch.magnitude != given_result.stretch.magnitude;
+
+    return position_change || rotation_change || scale_change || stretch_change;
+}
+
+bool CTrail::push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& img, SModeResult& given_result) {
     /* returns true if an element was actually pushed or updated */
 
     //remove oldest cursor first if its lifetime is exceeded.
     std::erase_if(samples, [](CTrail::TrailPoint& x) { return x.age() >= CONFIG(trailLifetime); });
 
-    //don't stack cursors, but keep an idle cursor young (for alpha calcs)
-    if (!samples.empty()) {
-        if (samples.back().pos == pos) {
-            samples.back().timestamp = high_resolution_clock::now();
+    //determine if it's the right time to add to trail (according to rate)
+    if (timeSinceLastPush() >= CONFIG(trailRate)) {
+        
+        //only add to trail if position/scale/rotation/stretch have changed.
+        if (hasChanged(pos, given_result)) {
+            samples.push_back({pos, img.bufferTex, given_result, img.size, img.hotspot, high_resolution_clock::now()});
+
+            last_push_time = high_resolution_clock::now();
+
+            return true;
         }
-    }
 
-    //we'll get a stuttering lead cursor if we don't do this outside of the tick_counter conditional below.
-    if (samples.empty()) {
-        samples.push_back({pos, img.bufferTex, rotation, scale, img.size, img.hotspot, high_resolution_clock::now()});
-    }
-
-    //determine if it's the right time to spawn a new cursor (according to rate)
-    tick_counter += 1;
-    if (tick_counter >= CONFIG(trailRate)) {
         //if we've exceeded the max trail length, remove earliest trail point
         if (samples.size() >= CONFIG(trailLength)) {
             samples.pop_front();
-        }
-
-        tick_counter = 0; //reset tick counter
-
-        /* push onto the trail if it's empty or position/rotation/scale/stretch have changed since last sample*/
-        
-        if (samples.empty() || pos != samples.back().pos) {
-            samples.push_back({pos, img.bufferTex, rotation, scale, img.size, img.hotspot, high_resolution_clock::now()});
-            return true;
-        }
-        else {
-            bool rotation_change = samples.back().result.rotation != given_result.rotation,
-                 scale_change    = samples.back().result.scale != given_result.scale,
-                 stretch_change = samples.back().result.stretch.angle != given_result.stretch.angle ||
-                                  samples.back().result.stretch.magnitude != given_result.stretch.magnitude;
-
-            if(rotation_change || scale_change || stretch_change) {
-                samples.push_back({pos, img.bufferTex, given_result, img.size, img.hotspot, high_resolution_clock::now()});
-                return true;
-            }
         }
     }
 
@@ -66,5 +66,4 @@ bool CTrail::push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& im
 
 void CTrail::warp(void) {
     samples.clear();
-    tick_counter = 0;
 }
