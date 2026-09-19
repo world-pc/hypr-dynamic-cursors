@@ -24,7 +24,8 @@ class CTrail {
             return duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - timestamp).count();
         }
     };
-
+        float timeSinceLastPush(void);
+        bool hasChanged(Vector2D pos, SModeResult& given_result);
     bool                          push(Vector2D pos, const Pointer::CPointerManager::SCursorImage& img, SModeResult& given_result);
     const std::deque<TrailPoint>& get() const {
         return samples;
@@ -34,6 +35,6 @@ class CTrail {
     void warp(void);
 
   private:
-    int                    tick_counter = 0;
+    high_resolution_clock::time_point last_push_time = high_resolution_clock::now();
     std::deque<TrailPoint> samples;
 };
