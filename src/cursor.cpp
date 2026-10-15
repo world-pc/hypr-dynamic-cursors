@@ -202,9 +202,11 @@ void CDynamicCursors::renderSoftware(Pointer::CPointerManager* pointers, PHLMONI
                 //compute point's alpha value, if trail fading is enabled.
                 if (CONFIG(trailFade)) {
                     if (point.age() > CONFIG(trailLifetime)) {
-                        trailData.alpha = 0;
+                        trailData.alpha = 0.0f;
+                    } else if (point.age() > CONFIG(opaqueLifetime)) {
+                        trailData.alpha = (CONFIG(trailLifetime)-point.age())/(CONFIG(trailLifetime) - CONFIG(opaqueLifetime));
                     } else {
-                        trailData.alpha = 1.0f - point.age() / CONFIG(trailLifetime);
+                        trailData.alpha = 1.0f;
                     }
                 } else {
                     trailData.alpha = 1.0f;
