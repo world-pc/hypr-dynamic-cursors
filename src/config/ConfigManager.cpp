@@ -47,6 +47,7 @@ CConfigHandler::CConfigHandler() {
     c_trailLength     = conf(NS("trail:length"),           1000,                   "max cursor trail length, in cursors.");
     c_trailRate       = conf(NS("trail:rate"),             5,                      "spawn a cursor every x ticks.");
     c_trailLifetime   = conf(NS("trail:lifetime"),         700.0f,                 "trail cursors removed after x ms.");
+    c_opaqueLifetime  = conf(NS("trail:opaquelifetime"),   500.0f,                 "trail cursor begins to fade after x ms.");
 
     c_highresEnabled  = conf(NS("hyprcursor:enabled"),     true,                   "enable dedicated hyprcursor support");
     c_highresNearest  = conf(NS("hyprcursor:nearest"),     1,                      "use nearest-neighbour scaling when magnifying beyond texture size");
